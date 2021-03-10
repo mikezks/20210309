@@ -1,6 +1,11 @@
 import { Flight } from '@flight-workspace/flight-lib';
 import { createAction, props } from '@ngrx/store';
 
+export const flightsLoad = createAction(
+  '[FlightBooking] Flight load',
+  props<{ from: string, to: string, urgent: boolean }>()
+);
+
 export const flightUpdate = createAction(
   '[FlightBooking] Flight update',
   props<{ flight: Flight }>()
