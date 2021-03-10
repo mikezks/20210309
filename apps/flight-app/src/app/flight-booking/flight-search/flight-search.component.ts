@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @angular-eslint/no-empty-lifecycle-method */
-import {Component, OnInit} from '@angular/core';
-import {Flight, FlightService} from '@flight-workspace/flight-lib';
-import { select, Store } from '@ngrx/store';
+import { Component, OnInit } from '@angular/core';
+import { Flight, FlightService } from '@flight-workspace/flight-lib';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as fromFlightBooking from '../+state';
 
@@ -51,8 +51,22 @@ export class FlightSearchComponent implements OnInit {
       );
   }
 
-  delay(): void {
-    this.flightService.delay();
+  delay(flight: Flight): void {
+    // this.flightService.delay();
+
+    this.store.dispatch(
+      fromFlightBooking.flightUpdate({
+        flight: {
+          ...flight,
+          date: addMinutesToDate(flight.date, 15).toISOString()
+        }
+      })
+    );
   }
 
 }
+
+export const addMinutesToDate = (date: Date | string, minutes: number): Date => {
+  const dateObj = date instanceof Date ? date : new Date(date);
+  return new Date(dateObj.getTime() + minutes * 60 * 1_000);
+};
