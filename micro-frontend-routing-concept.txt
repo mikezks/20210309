@@ -1,0 +1,33 @@
+
+
+http://localhost:4200/shell/home
+
+http://localhost:4200/shell/flight/booking/flight/search
+                                        ^ Flight-Booking MF
+
+http://localhost:4200/shell/flight/bording/passenger/7
+                                        ^ Passenger-Bording MF
+
+
+http://localhost:4200/shell/flight(
+    booking:flight/search
+    //
+    bording:passenger/9
+)
+
+[routerLink]="['', { outlets: { bording: ['stats/ceckedin']}}]"
+
+history.pushState(null, null, `
+    http://localhost:4200/(bording:passenger/9)
+`)
+
+history.pushState(null, null, `
+    http://localhost:4200/passenger/9
+`)
+
+
+http://localhost:4200/shell/flight(
+    mfe1:flight/search
+    //
+    mfe2:passenger/9
+)
