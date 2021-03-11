@@ -28,10 +28,11 @@ export class FlightSearchComponent implements OnInit {
     5: true
   };
 
-  constructor(private store: Store<fromFlightBooking.FeatureAppState>) {}
+  constructor(private store: Store) {}
 
   ngOnInit() {
-    this.flights$ = this.store.select(state => state.flightBooking.flights);
+    // this.flights$ = this.store.select(state => state.flightBooking.flights);
+    this.flights$ = this.store.select(fromFlightBooking.selectFlights);
   }
 
   search(): void {
