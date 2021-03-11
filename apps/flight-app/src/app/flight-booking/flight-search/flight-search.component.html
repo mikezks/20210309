@@ -1,5 +1,6 @@
 <ng-container *ngIf="{
-  flights: flights$ | async
+  flights: flights$ | async,
+  filters: selectFilters$ | async
 } as state">
 
   <div class="card">
@@ -45,6 +46,13 @@
         </div>
       </form>
 
+    </div>
+  </div>
+
+  <div *ngIf="state.filters.length" class="card">
+    <div class="content">
+      <pre>Previous searches:
+{{ state.filters.slice().reverse() | json }}</pre>
     </div>
   </div>
 

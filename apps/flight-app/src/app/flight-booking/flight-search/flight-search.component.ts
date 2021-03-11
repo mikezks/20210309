@@ -2,14 +2,32 @@
 /* eslint-disable @angular-eslint/no-empty-lifecycle-method */
 import { Component, OnInit } from '@angular/core';
 import { Flight } from '@flight-workspace/flight-lib';
+import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
+import { stat } from 'fs';
 import { Observable } from 'rxjs';
 import * as fromFlightBooking from '../+state';
+
+export interface Filter {
+  from: string;
+  to: string;
+}
+
+export interface LocalState {
+  filters: Filter[];
+}
+
+export const initialLocalState: LocalState = {
+  filters: []
+};
 
 @Component({
   selector: 'flight-search',
   templateUrl: './flight-search.component.html',
-  styleUrls: ['./flight-search.component.css']
+  styleUrls: ['./flight-search.component.css'],
+  providers: [
+    ComponentStore
+  ]
 })
 export class FlightSearchComponent implements OnInit {
 
@@ -28,17 +46,47 @@ export class FlightSearchComponent implements OnInit {
     5: true
   };
 
-  constructor(private store: Store) {}
+  /**
+   * Updater
+   */
+
+  addFilter = this.localStore.updater(
+    (state, filter: Filter) => ({
+      ...state,
+      filters: [
+        ...state.filters,
+        filter
+      ]
+    })
+  );
+
+  /**
+   * Selectors
+   */
+
+  selectFilters$ = this.localStore.select(
+    state => state.filters
+  );
+
+  constructor(
+    private globalStore: Store,
+    private localStore: ComponentStore<LocalState>) {}
 
   ngOnInit() {
-    // this.flights$ = this.store.select(state => state.flightBooking.flights);
-    this.flights$ = this.store.select(fromFlightBooking.selectFlights);
+    this.localStore.setState(initialLocalState);
+    // this.flights$ = this.globalStore.select(state => state.flightBooking.flights);
+    this.flights$ = this.globalStore.select(fromFlightBooking.selectFlights);
   }
 
   search(): void {
     if (!this.from || !this.to) return;
 
-    this.store.dispatch(
+    this.addFilter({
+      from: this.from,
+      to: this.to
+    });
+
+    this.globalStore.dispatch(
       fromFlightBooking.flightsLoad({
         from: this.from,
         to: this.to,
@@ -48,7 +96,7 @@ export class FlightSearchComponent implements OnInit {
   }
 
   delay(flight: Flight): void {
-    this.store.dispatch(
+    this.globalStore.dispatch(
       fromFlightBooking.flightUpdate({
         flight: {
           ...flight,
